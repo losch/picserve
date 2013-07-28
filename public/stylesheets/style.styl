@@ -1,0 +1,71 @@
+body
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif
+  margin: 0 0 0 0
+  height: 100%
+  width: 100%
+  background: #666666
+
+a
+  color: #00B7FF
+
+.slideshow
+    position: absolute
+    top: 0%
+    height: 60%
+    width: 100%
+    box-sizing: border-box
+    background-color: #f4f4f4
+    padding: 0 0 3em 0
+    -webkit-user-select: none
+    -moz-user-select: none
+    -ms-user-select: none
+    user-select: none
+
+.fullsize-image
+    position: absolute
+    top: 10%
+    left: 10%
+    height: 80%
+    width: 80%
+    background: #f4f4f4 no-repeat center
+    background-size: contain
+
+a.next, a.prev
+    position: absolute
+    top: 0%
+    width: 5%
+    height: 100%
+    cursor: pointer
+    text-align: center
+    box-sizing: border-box
+
+a.next:hover, a.prev:hover
+    background-color: #ddd
+
+a.next
+    right: 0
+    border-left: 1px solid #ccc
+
+a.prev
+    left: 0
+    border-right: 1px solid #ccc
+
+span
+    position: absolute
+    top: 50%
+    width: 100%
+    display: block
+    line-height: 0
+    text-align: center
+    font-size: 1.6em
+    font-family: Arial
+    color: #aaa
+
+.thumbnails
+    padding: 1% 1% 1% 1%
+    position: absolute
+    top: 60%
+    cursor: pointer
+
+img
+    padding: 1% 1% 1% 1%

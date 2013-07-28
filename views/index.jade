@@ -1,0 +1,67 @@
+extends layout
+
+block content
+    #container
+
+    script(id='gallery', type='text/ractive').
+        {{#fullsize}}
+        <div class='slideshow' intro='fade' outro='fade'>
+            <a class='prev' proxy-tap='prev'><span>&laquo;</span></a>
+            <div class='fullsize-image' style='background-image: url({{fullsize}})' />
+            <a class='next' proxy-tap='next'><span>&raquo;</span></a>
+        </div>
+        {{/fullsize}}
+        
+        <div class='thumbnails'>
+            {{#pictures:index}}
+            <img proxy-tap='select' src='{{thumbnail}}' selection='{{index}}'>
+            {{/pictures}}
+        </div>
+
+    script(src='javascripts/Ractive.js')
+
+    //- Hack for reconstructing data structure from index.js
+    script() var pictures = [];
+    for picture in pictures
+        script().
+            pictures.push({thumbnail: "#{picture.thumbnail}",
+                           full: "#{picture.full}"});
+
+    script().
+        Ractive.prototype.select = function(selection) {
+            // Wrap from first picture to last
+            if (selection < 0) {
+                selection = pictures.length - 1; 
+            }
+            // ...and from last picture to first
+            else if (selection > (pictures.length - 1)) {
+                selection = 0;
+            }
+            this.set('selection', selection);
+            this.set('fullsize', pictures[selection].full);
+        };
+
+        var ractive = new Ractive({
+           el: 'container',
+           template: '#gallery',
+           data: { pictures: pictures,
+                   selection: 0,
+                   fullsize: pictures[0].full }
+           });
+
+        ractive.on('select',
+            function(event) {
+                ractive.select(event.node.getAttribute('selection'));
+            });
+
+        ractive.on('next',
+            function(event) {
+                var selection = ractive.get('selection');
+                ractive.select(selection + 1);
+                });
+
+        ractive.on('prev',
+            function(event) {
+                var selection = ractive.get('selection');
+                ractive.select(selection - 1);
+                });

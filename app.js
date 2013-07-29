@@ -11,7 +11,7 @@ var express = require('express')
 
 var app = express();
 
-// all environments
+// All environments
 app.set('port', process.env.PORT || 3000);
 app.set('views', __dirname + '/views');
 app.set('view engine', 'jade');
@@ -23,7 +23,7 @@ app.use(app.router);
 app.use(require('stylus').middleware(__dirname + '/public'));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// development only
+// Development only
 if ('development' == app.get('env')) {
     app.use(express.errorHandler());
 }
@@ -32,30 +32,38 @@ app.get('/', routes.index);
 app.get('/users', user.list);
 
 // Find pictures
-var fullsizePics = fs.readdirSync('./public/images');
+var args = process.argv.splice(2);
+var picturePath = args[0] || './public/images';
 
-function forEach(array, action) {
-    for (var i = 0; i < array.length; i++)
-        action(array[i]);
+try {
+    var fullsizePics = fs.readdirSync(picturePath);
+}
+catch (err) {
+    console.error(err);
+    process.exit(1);
 }
 
-function map(func, array) {
-    var result = [];
-        forEach(array, function (element) {
-        result.push(func(element));
-    });
-    return result;
+function isValidPicture(picture) {
+    var validExtensions = ['bmp', 'jpg', 'gif', 'svg', 'png'];
+    var ext = picture.slice(-3).toLowerCase();
+    for (var i in validExtensions) {
+        if (ext == validExtensions[i])
+            return true;
+    }
+    return false;
 }
 
-function makePictureData(picture) {
+function createPictureData(picture) {
     var filename = 'images/' + picture;
     return { thumbnail: filename, full: filename };
 }
 
-var pictures = map(makePictureData, fullsizePics);
+app.use('/images', express.static(picturePath));
 
+var pictures = fullsizePics.filter(isValidPicture).map(createPictureData);
 routes.setPictures(pictures);
 
+// Start serving
 http.createServer(app).listen(app.get('port'), function(){
     console.log('Express server listening on port ' + app.get('port'));
 });

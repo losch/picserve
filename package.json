@@ -1,6 +1,8 @@
 {
   "name": "picserve",
   "version": "0.0.1",
+  "description": "Simple picture server.",
+  "author": "Ilari Nummila <ilarinum@gmail.com>",
   "private": true,
   "scripts": {
     "start": "node app.js"
@@ -8,6 +10,8 @@
   "dependencies": {
     "express": "3.3.4",
     "jade": "*",
-    "stylus": "*"
+    "stylus": "*",
+    "imagemagick": "0.1.3",
+    "temp": "0.5.1"
   }
 }

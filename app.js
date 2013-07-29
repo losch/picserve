@@ -2,12 +2,15 @@
  * Losch's simple picture server
  */
 
-var express = require('express')
-  , routes = require('./routes')
-  , user = require('./routes/user')
-  , http = require('http')
-  , path = require('path')
-  , fs = require('fs');
+var express = require('express'),
+    routes = require('./routes'),
+    user = require('./routes/user'),
+    http = require('http'),
+    path = require('path'),
+    querystring = require('querystring'),
+    fs = require('fs'),
+    im = require('imagemagick'),
+    temp = require('temp');
 
 var app = express();
 
@@ -43,6 +46,10 @@ catch (err) {
     process.exit(1);
 }
 
+// Create temporary directory for thumbnails
+var tempDirectory = temp.mkdirSync('picserve-');
+console.log('Using temporary directory: ' + tempDirectory);
+
 function isValidPicture(picture) {
     var validExtensions = ['bmp', 'jpg', 'gif', 'svg', 'png'];
     var ext = picture.slice(-3).toLowerCase();
@@ -53,12 +60,31 @@ function isValidPicture(picture) {
     return false;
 }
 
+function createThumbnail(source, destination) {
+    console.log("Generating thumbnail: " + source + " -> " + destination);
+
+    im.resize(
+        { srcPath: source,
+          dstPath: destination,
+          width:   100 },
+        function(err, stdout, stderr){
+            if (err) throw err;
+        });
+}
+
 function createPictureData(picture) {
-    var filename = 'images/' + picture;
-    return { thumbnail: filename, full: filename };
+    var full = path.join('images', querystring.escape(picture));
+    var thumb = path.join('thumbnails', querystring.escape(picture));
+
+    var source = path.join(picturePath, picture);
+    var destinaton = path.join(tempDirectory, picture);
+    createThumbnail(source, destinaton);
+
+    return { thumbnail: thumb, full: full };
 }
 
 app.use('/images', express.static(picturePath));
+app.use('/thumbnails', express.static(tempDirectory));
 
 var pictures = fullsizePics.filter(isValidPicture).map(createPictureData);
 routes.setPictures(pictures);
@@ -66,4 +92,16 @@ routes.setPictures(pictures);
 // Start serving
 http.createServer(app).listen(app.get('port'), function(){
     console.log('Express server listening on port ' + app.get('port'));
+});
+
+// Exit gracefully cleaning up temporary files
+process.on('SIGINT', function() {
+    console.log("\nSIGINT received, shutting down");
+    process.exit(0);
+});
+
+process.once('SIGUSR2', function () {
+    console.log("\nSIGUSR2 received, shutting down");
+    temp.cleanup();
+    process.kill(process.pid, 'SIGUSR2'); 
 });

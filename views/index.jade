@@ -13,28 +13,28 @@ block content
         </div>
 
         <div class='thumbnails'>
-            {{#pictures:index}}
+            {{#images:index}}
             <img width="100" height="auto" proxy-tap='select' src='{{thumbnail}}' selection='{{index}}'>
-            {{/pictures}}
+            {{/images}}
         </div>
 
     script(src='javascripts/Ractive.js')
 
     //- Hack for reconstructing data structure from index.js
-    script() var pictures = [];
-    for picture in pictures
+    script() var images = [];
+    for image in images
         script().
-            pictures.push({thumbnail: "#{picture.thumbnail}",
-                           full: "#{picture.full}"});
+            images.push({thumbnail: "#{image.thumbnail}",
+                         fullsize: "#{image.fullsize}"});
 
     script().
         Ractive.prototype.select = function(selection) {
             // Wrap from first picture to last
             if (selection < 0) {
-                selection = pictures.length - 1; 
+                selection = images.length - 1; 
             }
             // ...and from last picture to first
-            else if (selection > (pictures.length - 1)) {
+            else if (selection > (images.length - 1)) {
                 selection = 0;
             }
 
@@ -42,16 +42,16 @@ block content
             if (oldSelection != selection) {
                 this.set('selection', selection);
                 this.set('fullsize', null, function() {
-                    this.set('fullsize', pictures[selection].full) });
+                    this.set('fullsize', images[selection].fullsize) });
             }
         };
 
         var ractive = new Ractive({
            el: 'container',
            template: '#gallery',
-           data: { pictures: pictures,
+           data: { images: images,
                    selection: 0,
-                   fullsize: pictures ? pictures[0].full : undefined }
+                   fullsize: images ? images[0].fullsize : undefined }
            });
 
         ractive.on('select',

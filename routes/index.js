@@ -2,11 +2,11 @@
  * Slideshow page
  */
 
-var pictures = [];
+var images = [];
 
 exports.index = function(req, res) {
-  res.render('index', { title: "Losch's simple picture server",
-                        pictures: pictures });
+  res.render('index', { title: "Simple picture server",
+                        images: images });
 };
 
-exports.setPictures = function(newPictures) { pictures = newPictures; };
+exports.setImages = function(newImages) { images = newImages; };

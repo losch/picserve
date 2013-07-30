@@ -1,16 +1,14 @@
 /**
- * Losch's simple picture server
+ * Simple picture server
  */
 
 var express = require('express'),
     routes = require('./routes'),
-    user = require('./routes/user'),
     http = require('http'),
     path = require('path'),
     querystring = require('querystring'),
-    fs = require('fs'),
-    im = require('imagemagick'),
-    temp = require('temp');
+    temp = require('temp'),
+    images = require('./images');
 
 var app = express();
 
@@ -32,62 +30,43 @@ if ('development' == app.get('env')) {
 }
 
 app.get('/', routes.index);
-app.get('/users', user.list);
 
-// Find pictures
+// Find image files
 var args = process.argv.splice(2);
-var picturePath = args[0] || './public/images';
-
-try {
-    var fullsizePics = fs.readdirSync(picturePath);
-}
-catch (err) {
-    console.error(err);
-    process.exit(1);
-}
+var imagePath = args[0] || './public/images';
+console.log('Serving images from directory: ' + imagePath);
+var imageFiles = images.searchImages(imagePath);
 
 // Create temporary directory for thumbnails
 var tempDirectory = temp.mkdirSync('picserve-');
 console.log('Using temporary directory: ' + tempDirectory);
 
-function isValidPicture(picture) {
-    var validExtensions = ['bmp', 'jpg', 'gif', 'svg', 'png'];
-    var ext = picture.slice(-3).toLowerCase();
-    for (var i in validExtensions) {
-        if (ext == validExtensions[i])
-            return true;
-    }
-    return false;
+// Generates a thumbnail image
+function generateThumbnail(imageFile) {
+    var source = path.join(imagePath, imageFile);
+    var destinaton = path.join(tempDirectory, imageFile);
+    images.generateThumbnail(source, destinaton);
 }
 
-function createThumbnail(source, destination) {
-    console.log("Generating thumbnail: " + source + " -> " + destination);
-
-    im.resize(
-        { srcPath: source,
-          dstPath: destination,
-          width:   100 },
-        function(err, stdout, stderr){
-            if (err) throw err;
-        });
+// Returns URLs to thumbnail sized and full sized image files
+function getURLs(imageFile) {
+    var full = path.join('images', querystring.escape(imageFile));
+    var thumb = path.join('thumbnails', querystring.escape(imageFile));
+    return { thumbnail: thumb,
+             fullsize: full };
 }
 
-function createPictureData(picture) {
-    var full = path.join('images', querystring.escape(picture));
-    var thumb = path.join('thumbnails', querystring.escape(picture));
+// Generate thumbnails and URLs to image files
+var imageURLs = imageFiles.map(
+    function(f) {
+        generateThumbnail(f);
+        return getURLs(f);
+    });
 
-    var source = path.join(picturePath, picture);
-    var destinaton = path.join(tempDirectory, picture);
-    createThumbnail(source, destinaton);
-
-    return { thumbnail: thumb, full: full };
-}
-
-app.use('/images', express.static(picturePath));
+// Set up routes to image files
+routes.setImages(imageURLs);
+app.use('/images', express.static(imagePath));
 app.use('/thumbnails', express.static(tempDirectory));
-
-var pictures = fullsizePics.filter(isValidPicture).map(createPictureData);
-routes.setPictures(pictures);
 
 // Start serving
 http.createServer(app).listen(app.get('port'), function(){

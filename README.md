@@ -4,10 +4,10 @@ Simple Picture Server
 Simple web application built on Node.js for serving image files with
 thumbnails easily from any directory.
 
-Thumbnails are generated to temp directory and are cleaned up when the
-application is exit.
+Thumbnails are generated to temporary directory and are cleaned up when
+the application is exit.
 
-### Prerequisites
+### Dependencies
 
 * Node.js
 * ImageMagick
@@ -15,8 +15,7 @@ application is exit.
 ### Installation
 
     git clone https://github.com/losch/picserve.git
-    cd picserve
-    npm install
+    cd picserve && npm install
 
 ### Usage
 

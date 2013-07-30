@@ -1,9 +1,8 @@
 Simple Picture Server
 =====================
 
-Simple web application built on Node.js for serving image files with
-thumbnails easily from any directory.
-
+Simple web application built on Node.js and Ractive for serving image files
+with thumbnails easily from any directory.
 Thumbnails are generated to temporary directory and are cleaned up when
 the application is exit.
 

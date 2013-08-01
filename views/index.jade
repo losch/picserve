@@ -54,19 +54,35 @@ block content
                    fullsize: images ? images[0].fullsize : undefined }
            });
 
-        ractive.on('select',
-            function(event) {
+        function selectionMover(offset) {
+            return function() {
+                var selection = ractive.get('selection');
+                ractive.select(selection + offset);
+            };
+        }
+
+        var moveLeft = selectionMover(-1);
+        var moveRight = selectionMover(1);
+
+        ractive.on({
+            select: function(event) {
                 ractive.select(event.node.getAttribute('selection'));
-            });
+                },
+            next: moveRight,
+            prev: moveLeft
+        });
 
-        ractive.on('next',
-            function(event) {
-                var selection = ractive.get('selection');
-                ractive.select(selection + 1);
-                });
+        // Left and right keys are for browsing images
+        document.onkeydown = function(event) {
+            event = event || window.event;
 
-        ractive.on('prev',
-            function(event) {
-                var selection = ractive.get('selection');
-                ractive.select(selection - 1);
-                });
+            switch(event.keyCode) {
+                case 37: // Left arrow
+                moveLeft();
+                break;
+
+                case 39: // Right arrow
+                moveRight();
+                break;
+            }
+        };

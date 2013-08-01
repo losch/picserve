@@ -10,6 +10,7 @@ var express = require('express'),
     path = require('path'),
     querystring = require('querystring'),
     temp = require('temp'),
+    async = require('async'),
     images = require('./images');
 
 var app = express();
@@ -44,10 +45,10 @@ var tempDirectory = temp.mkdirSync('picserve-');
 console.log('Using temporary directory: ' + tempDirectory);
 
 // Generates a thumbnail image
-function generateThumbnail(imageFile) {
+function generateThumbnail(imageFile, callback) {
     var source = path.join(imagePath, imageFile);
     var destinaton = path.join(tempDirectory, imageFile);
-    images.generateThumbnail(source, destinaton);
+    images.generateThumbnail(source, destinaton, 100, callback);
 }
 
 // Returns URLs to thumbnail sized and full sized image files
@@ -58,12 +59,15 @@ function getURLs(imageFile) {
              fullsize: full };
 }
 
-// Generate thumbnails and URLs to image files
-var imageURLs = imageFiles.map(
-    function(f) {
-        generateThumbnail(f);
-        return getURLs(f);
-    });
+// Generate thumbnails and URLs to image files. async is used to make
+// this happen synchronously. Otherwise as many processes would be
+// spawned than there's found image files.
+async.mapSeries(imageFiles,
+                generateThumbnail,
+                function (err, results) {
+                    if (err) throw err;
+                });
+var imageURLs = imageFiles.map(getURLs);
 
 // Set up routes to image files
 routes.setImages(imageURLs);

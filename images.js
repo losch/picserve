@@ -40,7 +40,7 @@ function searchImages(directory) {
 //
 // Generates a thumbnail of given source image file to destination file
 //
-function generateThumbnail(source, destination, width) {
+function generateThumbnail(source, destination, width, callback) {
     console.log("Generating thumbnail: " + source + " -> " + destination);
 
     im.resize(
@@ -51,6 +51,7 @@ function generateThumbnail(source, destination, width) {
         },
         function(err, stdout, stderr) {
             if (err) throw err;
+            callback();
         });
 }
 

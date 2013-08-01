@@ -3,24 +3,27 @@ body
   margin: 0 0 0 0
   height: 100%
   width: 100%
-  background: #666666
+  background: #9F9E9C
 
 a
   color: #00B7FF
 
 .slideshow
-    position: absolute
+    // The full image needs to stay always on top
+    z-index:1;
+    position: fixed
     top: 0%
     height: 60%
     width: 100%
     box-sizing: border-box
-    background-color: #f4f4f4
+    background-color: #F9F8F6
     padding: 0 0 3em 0
     // Prevent user from selecting anything which would look ugly
     -webkit-user-select: none
     -moz-user-select: none
     -ms-user-select: none
     user-select: none
+    border-bottom 2px solid #B3B2B0
 
 .fullsize-image
     position: absolute
@@ -28,7 +31,7 @@ a
     left: 10%
     height: 80%
     width: 80%
-    background: #f4f4f4 no-repeat center
+    background: #F9F8F6 no-repeat center
     background-size: contain
 
 a.next, a.prev
@@ -41,15 +44,15 @@ a.next, a.prev
     box-sizing: border-box
 
 a.next:hover, a.prev:hover
-    background-color: #ddd
+    background-color: #E5E4E2
 
 a.next
     right: 0
-    border-left: 1px solid #ccc
+    border-left: 1px solid #B3B2B0
 
 a.prev
     left: 0
-    border-right: 1px solid #ccc
+    border-right: 1px solid #B3B2B0
 
 span
     position: absolute
@@ -60,7 +63,7 @@ span
     text-align: center
     font-size: 1.6em
     font-family: Arial
-    color: #aaa
+    color: #9F9E9C
 
 .thumbnails
     padding: 1% 1% 1% 1%
@@ -69,4 +72,11 @@ span
     cursor: pointer
 
 img
-    padding: 1% 1% 1% 1%
+    padding: 0.5% 0.5% 0.5% 0.5%
+
+img.selected
+    background-color: #E5E4E2
+    border: 2px solid #B3B2B0
+
+img.unselected
+    border: 2px solid #9F9E9C

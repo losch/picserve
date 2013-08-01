@@ -7,25 +7,35 @@ block content
         <div class='slideshow'>
             <a class='prev' proxy-tap='prev'><span>&laquo;</span></a>
             {{#fullsize}}
-            <div class='fullsize-image' style='background-image: url("{{fullsize}}")' />
+            <div class='fullsize-image'
+             style='background-image: url("{{fullsize}}")' />
             {{/fullsize}}
             <a class='next' proxy-tap='next'><span>&raquo;</span></a>
         </div>
 
         <div class='thumbnails'>
             {{#images:index}}
-            <img width="100" height="auto" proxy-tap='select' src='{{thumbnail}}' selection='{{index}}'>
+            <img id='{{id}}'
+             class='{{( selection == index ? "selected" : "unselected" )}}'
+             width="100" height="auto"
+             proxy-tap='select'
+             src='{{thumbnail}}'
+             selection='{{index}}'>
             {{/images}}
         </div>
 
     script(src='javascripts/Ractive.js')
 
-    //- Hack for reconstructing data structure from index.js
-    script() var images = [];
+    // Reconstruct data structure from index.js
+    script().
+         var images = [];
+         var nextId = 0;
     for image in images
         script().
-            images.push({thumbnail: "#{image.thumbnail}",
-                         fullsize: "#{image.fullsize}"});
+            images.push({ id: "image_" + nextId,
+                          thumbnail: "#{image.thumbnail}",
+                          fullsize: "#{image.fullsize}" });
+            nextId += 1;
 
     script().
         Ractive.prototype.select = function(selection) {
@@ -44,6 +54,8 @@ block content
                 this.set('fullsize', null, function() {
                     this.set('fullsize', images[selection].fullsize) });
             }
+
+            return selection;
         };
 
         var ractive = new Ractive({
@@ -54,25 +66,34 @@ block content
                    fullsize: images ? images[0].fullsize : undefined }
            });
 
+        // Creates a function that moves selection to some direction
+        // with a given offset
         function selectionMover(offset) {
             return function() {
                 var selection = ractive.get('selection');
-                ractive.select(selection + offset);
+                selection = ractive.select(selection + offset);
+
+                // Make sure the selection is visible
+                var el = document.getElementById(images[selection].id);
+                el.scrollIntoView(false);
             };
         }
 
         var moveLeft = selectionMover(-1);
         var moveRight = selectionMover(1);
 
+        // Handle image selection events
         ractive.on({
             select: function(event) {
-                ractive.select(event.node.getAttribute('selection'));
+                var selection = parseInt(event.node.getAttribute('selection'),
+                                         10);
+                ractive.select(selection);
                 },
             next: moveRight,
             prev: moveLeft
         });
 
-        // Left and right keys are for browsing images
+        // Left and right keys are mapped for browsing images
         document.onkeydown = function(event) {
             event = event || window.event;
 

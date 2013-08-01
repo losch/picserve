@@ -3,23 +3,25 @@ body {
   margin: 0 0 0 0;
   height: 100%;
   width: 100%;
-  background: #666;
+  background: #9f9e9c;
 }
 a {
   color: #00b7ff;
 }
 .slideshow {
-  position: absolute;
+  z-index: 1;
+  position: fixed;
   top: 0%;
   height: 60%;
   width: 100%;
   box-sizing: border-box;
-  background-color: #f4f4f4;
+  background-color: #f9f8f6;
   padding: 0 0 3em 0;
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+  border-bottom: 2px solid #b3b2b0;
 }
 .fullsize-image {
   position: absolute;
@@ -27,7 +29,7 @@ a {
   left: 10%;
   height: 80%;
   width: 80%;
-  background: #f4f4f4 no-repeat center;
+  background: #f9f8f6 no-repeat center;
   background-size: contain;
 }
 a.next,
@@ -42,15 +44,15 @@ a.prev {
 }
 a.next:hover,
 a.prev:hover {
-  background-color: #ddd;
+  background-color: #e5e4e2;
 }
 a.next {
   right: 0;
-  border-left: 1px solid #ccc;
+  border-left: 1px solid #b3b2b0;
 }
 a.prev {
   left: 0;
-  border-right: 1px solid #ccc;
+  border-right: 1px solid #b3b2b0;
 }
 span {
   position: absolute;
@@ -61,7 +63,7 @@ span {
   text-align: center;
   font-size: 1.6em;
   font-family: Arial;
-  color: #aaa;
+  color: #9f9e9c;
 }
 .thumbnails {
   padding: 1% 1% 1% 1%;
@@ -70,5 +72,12 @@ span {
   cursor: pointer;
 }
 img {
-  padding: 1% 1% 1% 1%;
+  padding: 0.5% 0.5% 0.5% 0.5%;
+}
+img.selected {
+  background-color: #e5e4e2;
+  border: 2px solid #b3b2b0;
+}
+img.unselected {
+  border: 2px solid #9f9e9c;
 }

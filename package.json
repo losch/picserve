@@ -3,15 +3,28 @@
   "version": "0.0.1",
   "description": "Simple picture server.",
   "author": "Ilari Nummila <ilarinum@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/losch/picserve.git"
+  },
   "private": true,
   "scripts": {
     "start": "node app.js"
   },
+  "keywords": [
+    "gallery",
+    "server"
+  ],
   "dependencies": {
     "express": "3.3.4",
     "jade": "*",
     "stylus": "*",
     "imagemagick": "0.1.3",
-    "temp": "0.5.1"
+    "temp": "0.5.1",
+    "async": "0.2.9"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=0.10.13"
   }
 }
